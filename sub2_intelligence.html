@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建筑营造智慧可视化</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js "></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f0fe 100%);
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .page-title {
+            text-align: center;
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        /* 重构flex布局：按需求分行显示 */
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap; /* 自动换行 */
+            gap: 20px;
+            width: 100%;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        .chart-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            height: 600px; /* 统一图表高度 */
+        }
+        /* 第一行两个图表：各占约50%宽度（减去间隙） */
+        .chart-card:nth-child(1),
+        .chart-card:nth-child(2) {
+            flex: 1;
+            min-width: 45%; /* 确保小屏幕也保持两个一行，避免过早换行 */
+            max-width: calc(50% - 10px); /* 减去gap的一半，避免溢出 */
+        }
+        /* 第二、三行各一个图表：占100%宽度 */
+        .chart-card:nth-child(3),
+        .chart-card:nth-child(4) {
+            width: 100%; /* 单独成行，占满容器宽度 */
+            min-width: 350px; /* 最小宽度限制 */
+        }
+        .chart-card:hover {
+            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        .chart-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #2d3748;
+            z-index: 10;
+        }
+        /* 所有图表容器统一样式 */
+        #chordChart, #treemapSunburstChart, #parallelScatter, #sankeyChart {
+            width: 100%;
+            height: calc(100% - 40px); /* 减去标题高度，避免溢出 */
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="page-title">传统民居建筑营造智慧可视化分析</h1>
+    <div class="chart-container">
+        <!-- 1. 关系图（第一行） -->
+        <div class="chart-card">
+            <div class="chart-title">结构-材料-性能关联图</div>
+            <div id="chordChart"></div>
+        </div>
+        <!-- 2. 矩形树图转旭日图（第一行） -->
+        <div class="chart-card">
+            <div class="chart-title">民居营造效率分析图</div>
+            <div id="treemapSunburstChart"></div>
+        </div>
+        <!-- 3. 平行坐标 + 散点矩阵（第二行） -->
+        <div class="chart-card">
+            <div class="chart-title">结构力学多维分析</div>
+            <div id="parallelScatter"></div>
+        </div>
+        <!-- 4. 桑基图（三层流向）（第三行） -->
+        <div class="chart-card">
+            <div class="chart-title">地域→材料→功能 流向</div>
+            <div id="sankeyChart"></div>
+        </div>
+    </div>
+
+    <script>
+        /* ---------------- 1. 基础配置：颜色表 + 类型映射 ---------------- */
+        const colorMap = {
+            结构: '#426871',
+            材料: '#d2b04c',
+            消耗: '#a3623a',
+            便捷: '#c25a3d',
+            优化: '#c39b6a'
+        };
+        const typeDict = {
+            '抬梁式':'结构','砖木混合':'结构','砖木结构':'结构','竹木结构':'结构','拱券复合':'结构',
+            '青砖':'材料','竹材':'材料','木材':'材料','黄土':'材料',
+            '高消耗':'消耗','中消耗':'消耗','低消耗':'消耗',
+            '高便捷':'便捷','中便捷':'便捷','低便捷':'便捷',
+            '高优化':'优化','中优化':'优化','低优化':'优化'
+        };
+        const regionColorMap = {
+            '华北': '#426871', '华东': '#d2b04c', '华南': '#a3623a', '西南': '#c25a3d', '西北': '#c39b6a'
+        };
+
+        /* ---------------- 2. 图表1：结构-材料-性能关联图（和弦图） ---------------- */
+        const rawGraphData = [
+            {"name":"抬梁式"},{"name":"砖木混合"},{"name":"砖木结构"},{"name":"竹木结构"},{"name":"拱券复合"},
+            {"name":"青砖"},{"name":"竹材"},{"name":"木材"},{"name":"黄土"},
+            {"name":"高消耗"},{"name":"中消耗"},{"name":"低消耗"},
+            {"name":"高便捷"},{"name":"中便捷"},{"name":"低便捷"},
+            {"name":"高优化"},{"name":"中优化"},{"name":"低优化"}
+        ];
+        const nodeData = rawGraphData.map(d=>({
+            name:d.name,
+            itemStyle:{color:colorMap[typeDict[d.name]]}
+        }));
+        const links = [
+            {"source":0,"target":7,"value":3},{"source":0,"target":10,"value":3},{"source":0,"target":12,"value":3},{"source":0,"target":17,"value":3},
+            {"source":1,"target":5,"value":2},{"source":1,"target":10,"value":2},{"source":1,"target":13,"value":2},{"source":1,"target":16,"value":2},
+            {"source":2,"target":5,"value":2},{"source":2,"target":11,"value":2},{"source":2,"target":13,"value":2},{"source":2,"target":15,"value":2},
+            {"source":3,"target":6,"value":1},{"source":3,"target":11,"value":1},{"source":3,"target":14,"value":1},{"source":3,"target":15,"value":1},
+            {"source":4,"target":8,"value":2},{"source":4,"target":9,"value":2},{"source":4,"target":13,"value":2},{"source":4,"target":15,"value":2}
+        ];
+        const chordOption = {
+            tooltip:{
+                formatter: params => `${params.source.name} → ${params.target.name}<br/>关联强度：${params.value}`
+            },
+            legend:{show:false},
+            series:[{
+                type:'graph',
+                layout:'force',
+                force:{repulsion:150,gravity:0.1,edgeLength:120,layoutAnimation:true},
+                roam:true,
+                label:{show: true,fontSize: 12},
+                edgeSymbol:['none','arrow'],
+                edgeSymbolSize:[0,6],
+                data:nodeData,
+                links:links,
+                lineStyle:{opacity:0.6}
+            }]
+        };
+
+        /* ---------------- 3. 图表2：民居营造效率（树图/旭日图切换） ---------------- */
+        const colorList = ['#426871','#d2b04c','#a3623a','#c25a3d','#c39b6a'];
+        const treeData = {
+            name:'建筑营造智慧',
+            children:[
+                {name:'北京四合院',children:[{name:'资源消耗',value:49},{name:'施工便捷性',value:100},{name:'空间优化率',value:0}]},
+                {name:'徽派民居',children:[{name:'资源消耗',value:38.2},{name:'施工便捷性',value:50},{name:'空间优化率',value:32.2}]},
+                {name:'岭南骑楼',children:[{name:'资源消耗',value:25.1},{name:'施工便捷性',value:50},{name:'空间优化率',value:71.1}]},
+                {name:'傣族竹楼',children:[{name:'资源消耗',value:0},{name:'施工便捷性',value:0},{name:'空间优化率',value:99}]},
+                {name:'陕北窑洞',children:[{name:'资源消耗',value:100},{name:'施工便捷性',value:50},{name:'空间优化率',value:100}]}]
+        };
+        // 树图配置
+        const treemapOption = {
+            color:colorList,
+            series:[{
+                type:'treemap',
+                id:'echarts-package-size',
+                animationDurationUpdate:1000,
+                roam:false,
+                nodeClick:undefined,
+                data:treeData.children,
+                universalTransition:true,
+                label:{show:true,showAllContent:true,fontSize:11,overflow:'break'},
+                breadcrumb:{show:false},
+                itemStyle:{borderColor:'#fff',borderWidth:1}
+            }]
+        };
+        // 旭日图配置
+        const sunburstOption = {
+            color:colorList,
+            series:[{
+                type:'sunburst',
+                id:'echarts-package-size',
+                radius:['20%','80%'],
+                animationDurationUpdate:1000,
+                nodeClick:undefined,
+                data:treeData.children,
+                universalTransition:true,
+                itemStyle:{borderWidth:1,borderColor:'rgba(255,255,255,.5)'},
+                label:{
+                    show:true,
+                    showAllContent:true,
+                    fontSize:10,
+                    overflow:'break',
+                    color:'#fff'
+                }
+            }]
+        };
+
+        /* ---------------- 4. 图表3：结构力学多维分析（平行坐标+散点矩阵） ---------------- */
+        const rawData2 = [
+            [6.0, 70, 80, '华北', '北京四合院'],
+            [6.3, 78, 75, '华东', '徽派民居'],
+            [6.1, 76, 90, '华南', '岭南骑楼'],
+            [6.6, 88, 72, '西南', '傣族竹楼'],
+            [6.9, 85, 82, '西北', '陕北窑洞']
+        ];
+
+        // 2. Schema
+        const schema = [
+            { name: 'antiQuake', index: 0, text: '抗震性（级）' },
+            { name: 'materialEff', index: 1, text: '材料效率（%）' },
+            { name: 'spaceUtil', index: 2, text: '空间利用率（%）' },
+            { name: 'region', index: 3, text: '地域' },
+            { name: 'structureType', index: 4, text: '建筑类型' }
+        ];
+
+        // 3. 配色
+        const regionColorMap2 = {
+            '华北': '#426871',
+            '华东': '#d2b04c',
+            '华南': '#a3623a',
+            '西南': '#c25a3d',
+            '西北': '#c39b6a'
+        };
+
+        // 4. 基础配置（调整网格宽度/间距适配布局）
+        const CATEGORY_DIM_COUNT = 3;
+        const GAP = 2; // 缩小网格间距
+        const BASE_LEFT = 8;
+        const BASE_TOP = 15;
+        const GRID_WIDTH = (100 - BASE_LEFT - GAP) / CATEGORY_DIM_COUNT - GAP;
+        const GRID_HEIGHT = (100 - BASE_TOP - GAP) / CATEGORY_DIM_COUNT - GAP;
+        const CATEGORY_DIM = 3;
+        const SYMBOL_SIZE = 8;
+
+        // 5. 提取散点数据
+        function retrieveScatterData(data, dimX, dimY) {
+            let result = [];
+            for (let i = 0; i < data.length; i++) { 
+                const region = data[i][CATEGORY_DIM];
+                let item = [
+                    data[i][dimX], 
+                    data[i][dimY],
+                    regionColorMap2[region], 
+                    data[i][4]
+                ];
+                item[CATEGORY_DIM] = region;
+                result.push(item);
+            }
+            return result;
+        }
+
+        // 6. 生成散点矩阵（无变化）
+        function generateGrids() {
+            let index = 0;
+            const grid = [];
+            const xAxis = [];
+            const yAxis = [];
+            const series = [];
+            for (let i = 0; i < CATEGORY_DIM_COUNT; i++) {
+                for (let j = 0; j < CATEGORY_DIM_COUNT; j++) {
+                    if (CATEGORY_DIM_COUNT - i + j >= CATEGORY_DIM_COUNT) continue;
+                    grid.push({
+                        left: BASE_LEFT + i * (GRID_WIDTH + GAP) + '%',
+                        top: BASE_TOP + j * (GRID_HEIGHT + GAP) + '%',
+                        width: GRID_WIDTH + '%',
+                        height: GRID_HEIGHT + '%',
+                        containLabel: true
+                    });
+                    xAxis.push({
+                        splitNumber: 3,
+                        position: 'top',
+                        axisLine: { show: j === 0, onZero: false, lineStyle: { width: 1.2 } },
+                        axisTick: { show: j === 0, inside: true, length: 4 },
+                        axisLabel: { 
+                            show: j === 0, 
+                            fontSize: 11, 
+                            margin: 5,
+                            formatter: val => schema[i].text.includes('%') ? val + '%' : val
+                        },
+                        type: 'value',
+                        gridIndex: index,
+                        scale: true,
+                        min: getMin(i),
+                        max: getMax(i)
+                    });
+                    yAxis.push({
+                        splitNumber: 3,
+                        position: 'right',
+                        axisLine: { show: i === CATEGORY_DIM_COUNT - 1, onZero: false, lineStyle: { width: 1.2 } },
+                        axisTick: { show: i === CATEGORY_DIM_COUNT - 1, inside: true, length: 4 },
+                        axisLabel: { 
+                            show: i === CATEGORY_DIM_COUNT - 1, 
+                            fontSize: 11, 
+                            margin: 5,
+                            formatter: val => schema[j].text.includes('%') ? val + '%' : val
+                        },
+                        type: 'value',
+                        gridIndex: index,
+                        scale: true,
+                        min: getMin(j),
+                        max: getMax(j)
+                    });
+                    series.push({
+                        type: 'scatter',
+                        symbolSize: SYMBOL_SIZE,
+                        symbol: 'circle',
+                        itemStyle: {
+                            color: params => params.data[2],
+                            borderColor: '#fff',
+                            borderWidth: 1,
+                            shadowBlur: 3
+                        },
+                        xAxisIndex: index,
+                        yAxisIndex: index,
+                        data: retrieveScatterData(rawData2, i, j),
+                        emphasis: { 
+                            itemStyle: { 
+                                color: params => params.data[2],
+                                borderColor: '#ff4500',
+                                borderWidth: 2
+                            },
+                            label: { 
+                                show: true, 
+                                position: 'right',
+                                fontSize: 10,
+                                formatter: params => params.data[3]
+                            }
+                        }
+                    });
+                    index++;
+                }
+            }
+            return { grid, xAxis, yAxis, series };
+        }
+
+        // 7. 轴范围函数
+        function getMin(dimIndex) {
+            const values = rawData2.map(item => item[dimIndex]);
+            return Math.floor(Math.min(...values) - (dimIndex === 0 ? 0.1 : 2));
+        }
+        function getMax(dimIndex) {
+            const values = rawData2.map(item => item[dimIndex]);
+            return Math.ceil(Math.max(...values) + (dimIndex === 0 ? 0.1 : 2));
+        }
+
+        const gridOption = generateGrids();
+
+        // 8. 平行坐标系列
+        function getParallelSeriesByRegion() {
+            return rawData2.map(item => ({
+                name: item[4],
+                type: 'parallel',
+                smooth: true,
+                lineStyle: { 
+                    width: 2.5,
+                    opacity: 0.8,
+                    color: regionColorMap2[item[CATEGORY_DIM]]
+                },
+                data: [item.slice(0, 3)],
+                emphasis: { 
+                    lineStyle: { width: 3.5, opacity: 1 }
+                }
+            }));
+        }
+
+        // 最终配置：核心调整布局
+        const parallelScatterOption = { // 统一变量名，避免错误
+            animation: false,
+            title: {
+                text: '传统民居结构力学分析',
+                left: 'center',
+                textStyle: { fontSize: 16, fontWeight: 500 },
+                top: 5,
+                padding: [0, 0, 10, 0]
+            },
+            // 隐藏右上角工具
+            toolbox: { show: false },
+            // 刷选功能保留，但隐藏右上角按钮
+            brush: {
+                brushLink: 'all',
+                xAxisIndex: gridOption.xAxis.map((_, idx) => idx),
+                yAxisIndex: gridOption.yAxis.map((_, idx) => idx),
+                inBrush: { opacity: 1, itemStyle: { shadowBlur: 8 } },
+                outOfBrush: { opacity: 0.15 },
+                brushType: 'rect',
+                // 隐藏刷选按钮
+                toolbox: { show: false }
+            },
+            // 图例左移，避免重叠
+            legend: {
+                data: rawData2.map(item => item[4]),
+                orient: 'horizontal',
+                top: 30,
+                left: '5%', // 从center改为10%，左移图例
+                itemWidth: 12,
+                itemHeight: 12,
+                textStyle: { fontSize: 11, color: '#333' },
+                selectedMode: 'multiple',
+                tooltip: { show: true, formatter: '点击切换{name}显示/隐藏' },
+                selected: rawData2.reduce((obj, item) => {
+                    obj[item[4]] = true;
+                    return obj;
+                }, {})
+            },
+            // 提示框
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(255,255,255,0.9)',
+                borderColor: '#ddd',
+                borderWidth: 1,
+                padding: 10,
+                fontSize: 12,
+                color: '#333',
+                formatter: function (params) {
+                    const data = params.seriesType === 'scatter' ? params.data : params.data[0];
+                    const structInfo = rawData2.find(item => item[4] === (params.seriesName || data[3]));
+                    return `
+                        <div style="font-weight:500">${structInfo[4]}</div>
+                        <div>地域：${structInfo[3]}</div>
+                        <div>抗震性：${structInfo[0]}级</div>
+                        <div>材料效率：${structInfo[1]}%</div>
+                        <div>空间利用率：${structInfo[2]}%</div>
+                    `;
+                }
+            },
+            // 平行坐标左移：调整left/right，保持左边界不变
+            parallelAxis: [
+                { 
+                    dim: 0, 
+                    name: schema[0].text, 
+                    nameTextStyle: { fontSize: 12, fontWeight: 500 },
+                    splitNumber: 3,
+                    min: getMin(0),
+                    max: getMax(0),
+                    axisLabel: { fontSize: 11, formatter: '{value}' }
+                },
+                { 
+                    dim: 1, 
+                    name: schema[1].text, 
+                    nameTextStyle: { fontSize: 12, fontWeight: 500 },
+                    splitNumber: 3,
+                    min: getMin(1),
+                    max: getMax(1),
+                    axisLabel: { fontSize: 11, formatter: '{value}%' }
+                },
+                { 
+                    dim: 2, 
+                    name: schema[2].text, 
+                    nameTextStyle: { fontSize: 12, fontWeight: 500 },
+                    splitNumber: 3,
+                    min: getMin(2),
+                    max: getMax(2),
+                    axisLabel: { fontSize: 11, formatter: '{value}%' }
+                }
+            ],
+            parallel: {
+                bottom: '8%',
+                left: '5%',
+                right: '40%',
+                height: '28%',
+                parallelAxisDefault: {
+                    type: 'value',
+                    nameLocation: 'end',
+                    nameGap: 18,
+                    axisLine: { lineStyle: { color: '#555', width: 1.2 } },
+                    axisTick: { lineStyle: { color: '#555', width: 1 } },
+                    splitLine: { show: true, lineStyle: { color: 'rgba(0,0,0,0.1)' } },
+                    axisLabel: { color: '#555', fontSize: 11 }
+                }
+            },
+            // 散点矩阵配置（无变化）
+            xAxis: gridOption.xAxis,
+            yAxis: gridOption.yAxis,
+            grid: gridOption.grid,
+            // 系列（无变化）
+            series: [
+                ...getParallelSeriesByRegion(),
+                ...gridOption.series
+            ]
+        };
+
+        /* ---------------- 5. 图表4：桑基图（地域→材料→功能，三层高度统一） ---------------- */
+        const sankeyOption = {
+            title: {
+                text: '传统民居材料构成流向',
+                left: 'center',
+                textStyle: { fontSize: 16, fontWeight: 500 },
+                subtext: '链路宽度=材料构成占比',
+                subtextStyle: { fontSize: 11, color: '#666' }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params) {
+                    if (params.dataType === 'link') {
+                        // 提取表格列标识（如G2=四合院使用）
+                        const colMap = {
+                            '北京四合院': 'G列（四合院使用）',
+                            '徽派民居': 'H列（徽派使用）',
+                            '岭南骑楼': 'I列（骑楼使用）',
+                            '傣族竹楼': 'J列（竹楼使用）',
+                            '陕北窑洞': 'K列（窑洞使用）'
+                        };
+                        return `
+                            流向：${params.sourceName} → ${params.targetName}<br/>
+                            构成占比：${(params.value * 100).toFixed(1)}%<br/>
+                            表格来源：${colMap[params.sourceName]}
+                        `;
+                    } else {
+                        return `
+                            类型：${params.data.category === 'build' ? '建筑类型' : '材料名称'}<br/>
+                            名称：${params.name}
+                        `;
+                    }
+                }
+            },
+            series: [
+                {
+                    type: 'sankey',
+                    layout: 'none',
+                    left: '5%',
+                    right: '15%',
+                    top: '20%',
+                    bottom: '10%',
+                    // 节点配置
+                    data: [
+                        // 建筑类型节点
+                        { name: '北京四合院', category: 'build', itemStyle: { color: '#426871' } },
+                        { name: '徽派民居', category: 'build', itemStyle: { color: '#d2b04c' } },
+                        { name: '岭南骑楼', category: 'build', itemStyle: { color: '#a3623a' } },
+                        { name: '傣族竹楼', category: 'build', itemStyle: { color: '#c25a3d' } },
+                        { name: '陕北窑洞', category: 'build', itemStyle: { color: '#c39b6a' } },
+                        // 材料名称节点
+                        { name: '木材（松木）', category: 'material', itemStyle: { color: '#8d6e63' } },
+                        { name: '木材（杉木）', category: 'material', itemStyle: { color: '#8d6e63' } },
+                        { name: '木材（楠木）', category: 'material', itemStyle: { color: '#8d6e63' } },
+                        { name: '青砖', category: 'material', itemStyle: { color: '#757575' } },
+                        { name: '条石（花岗岩）', category: 'material', itemStyle: { color: '#5d4037' } },
+                        { name: '条石（青条石）', category: 'material', itemStyle: { color: '#5d4037' } },
+                        { name: '石灰灰浆', category: 'material', itemStyle: { color: '#bdbdbd' } },
+                        { name: '糯米灰浆', category: 'material', itemStyle: { color: '#bdbdbd' } },
+                        { name: '陶瓦', category: 'material', itemStyle: { color: '#a1887f' } },
+                        { name: '竹材（桐油处理）', category: 'material', itemStyle: { color: '#689f38' } },
+                        { name: '茅草', category: 'material', itemStyle: { color: '#f5f5dc' } },
+                        { name: '蚝壳', category: 'material', itemStyle: { color: '#ffd700' } },
+                        { name: '黄土（夯实）', category: 'material', itemStyle: { color: '#8b4513' } },
+                        { name: '黄土（石灰改良）', category: 'material', itemStyle: { color: '#8b4513' } }
+                    ],
+                    // 链路配置
+                    links: [
+                        { source: '北京四合院', target: '木材（松木）', value: 0.6 },
+                        { source: '北京四合院', target: '青砖', value: 0.25 },
+                        { source: '北京四合院', target: '条石（花岗岩）', value: 0.04 },
+                        { source: '北京四合院', target: '条石（青条石）', value: 0.04 },
+                        { source: '北京四合院', target: '石灰灰浆', value: 0.05 },
+                        { source: '北京四合院', target: '茅草', value: 0.02 },
+                        { source: '徽派民居', target: '木材（杉木）', value: 0.55 },
+                        { source: '徽派民居', target: '青砖', value: 0.3 },
+                        { source: '徽派民居', target: '条石（花岗岩）', value: 0.07 },
+                        { source: '徽派民居', target: '糯米灰浆', value: 0.05 },
+                        { source: '徽派民居', target: '陶瓦', value: 0.03 },
+                        { source: '岭南骑楼', target: '木材（楠木）', value: 0.45 },
+                        { source: '岭南骑楼', target: '青砖', value: 0.35 },
+                        { source: '岭南骑楼', target: '茅草', value: 0.05 },
+                        { source: '岭南骑楼', target: '蚝壳', value: 0.15 },
+                        { source: '傣族竹楼', target: '竹材（桐油处理）', value: 0.9 },
+                        { source: '傣族竹楼', target: '条石（青条石）', value: 0.03 },
+                        { source: '傣族竹楼', target: '茅草', value: 0.06 },
+                        { source: '陕北窑洞', target: '青砖', value: 0.3 },
+                        { source: '陕北窑洞', target: '条石（花岗岩）', value: 0.05 },
+                        { source: '陕北窑洞', target: '糯米灰浆', value: 0.03 },
+                        { source: '陕北窑洞', target: '黄土（夯实）', value: 0.3 },
+                        { source: '陕北窑洞', target: '黄土（石灰改良）', value: 0.3 },
+                        { source: '陕北窑洞', target: '茅草', value: 0.02 }
+                    ],
+                    categories: [
+                        { name: 'build' },
+                        { name: 'material' }
+                    ],
+                    lineStyle: {
+                        color: 'source',
+                        curveness: 0.5,
+                        opacity: 0.8
+                    },
+                    emphasis: {
+                        focus: 'adjacency',
+                        itemStyle: {
+                            borderColor: '#fff',   // 白边
+                            borderWidth: 2,        // 边宽度
+                            borderType: 'solid'
+                        },
+                    },
+                    label: {
+                        show: true,
+                        fontSize: 16,
+                        fontWeight: 'bold'
+                    }
+                }
+            ]
+        };
+
+        /* ---------------- 6. 图表初始化 & 联动 & 响应式 ---------------- */
+        // 初始化所有图表
+        const chordChart = echarts.init(document.getElementById('chordChart'));
+        const treemapSunburstChart = echarts.init(document.getElementById('treemapSunburstChart'));
+        const pcScatChart = echarts.init(document.getElementById('parallelScatter'));
+        const sankeyChart = echarts.init(document.getElementById('sankeyChart'));
+
+        // 设置初始配置（修正变量名错误）
+        chordChart.setOption(chordOption);
+        treemapSunburstChart.setOption(treemapOption);
+        pcScatChart.setOption(parallelScatterOption);
+        sankeyChart.setOption(sankeyOption);
+
+        // 图表2：树图↔旭日图 3秒切换
+        let currentTreeOption = treemapOption;
+        setInterval(()=>{
+            currentTreeOption = currentTreeOption === treemapOption ? sunburstOption : treemapOption;
+            treemapSunburstChart.setOption(currentTreeOption);
+        }, 3000);
+
+        // 图表1↔图表2 联动：点击结构→高亮对应建筑
+        const structureToDwelling = {
+            '抬梁式':'北京四合院','砖木混合':'徽派民居','砖木结构':'岭南骑楼','竹木结构':'傣族竹楼','拱券复合':'陕北窑洞'
+        };
+        chordChart.on('click', params=>{
+            const dwelling = structureToDwelling[params.name];
+            if (dwelling) {
+                const opt = JSON.parse(JSON.stringify(treemapSunburstChart.getOption()));
+                function traverse(nodes) {
+                    nodes.forEach(n=>{
+                        if (n.name === dwelling) {
+                            n.itemStyle = n.itemStyle || {};
+                            n.itemStyle.stroke = '#ffcc00';
+                            n.itemStyle.strokeWidth = 3;
+                            n.itemStyle.shadowBlur = 8;
+                            n.itemStyle.shadowColor = 'rgba(255,204,0,0.6)';
+                        }
+                        if (n.children) traverse(n.children);
+                    });
+                }
+                traverse(opt.series[0].data);
+                treemapSunburstChart.setOption(opt);
+            }
+        });
+
+        // 响应式：窗口 resize 时更新图表大小
+        window.addEventListener('resize', () => {
+            chordChart.resize();
+            treemapSunburstChart.resize();
+            pcScatChart.resize();
+            sankeyChart.resize();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg" id="bamboo-svg">
+  <style>
+    .structure-layer { transition: all 1s ease; }
+    .roof-text { font-family: "SimSun", serif; font-size: 14px; }
+    .wall-text { font-family: "SimSun", serif; font-size: 14px; fill: #333; }
+    .ground-text { font-family: "SimSun", serif; font-size: 14px; fill: #fff; }
+  </style>
+
+  <!-- 1. 地面层（最下层） -->
+  <g id="layer-1" class="structure-layer" transform="translate(0, 0)">
+    <!-- 热带土地地面 -->
+    <rect x="100" y="400" width="600" height="50" fill="#8D6E63" />
+    <pattern id="bamboo-earth" width="50" height="25" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="50" height="25" fill="#8D6E63" />
+      <path d="M0,12 Q12,0 25,12 T50,12" stroke="#6D4C41" stroke-width="1" fill="none" />
+    </pattern>
+    <rect x="100" y="400" width="600" height="50" fill="url(#bamboo-earth)" />
+    <!-- 通风间隙 -->
+    <rect x="200" y="400" width="400" height="5" fill="transparent" stroke="#5D4037" stroke-width="1" />
+  </g>
+
+  <!-- 2. 底层（第二层） -->
+  <g id="layer-2" class="structure-layer" transform="translate(0, 0)">
+    <!-- 竹楼支撑立柱 -->
+    <rect x="200" y="300" width="15" height="100" fill="#8D6E63" />
+    <rect x="300" y="300" width="15" height="100" fill="#8D6E63" />
+    <rect x="400" y="300" width="15" height="100" fill="#8D6E63" />
+    <rect x="500" y="300" width="15" height="100" fill="#8D6E63" />
+    <rect x="600" y="300" width="15" height="100" fill="#8D6E63" />
+    <!-- 底层架空空间 -->
+    <rect x="200" y="380" width="415" height="20" fill="transparent" stroke="#8D6E63" stroke-width="1" />
+  </g>
+
+  <!-- 3. 主体结构层（第三层） -->
+  <g id="layer-3" class="structure-layer" transform="translate(0, 0)">
+    <!-- 竹编墙体 -->
+    <rect x="200" y="180" width="415" height="120" fill="#A1887F" opacity="0.7" />
+    <pattern id="bamboo-wall" width="20" height="20" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="20" stroke="#8D6E63" stroke-width="1" />
+      <line x1="5" y1="0" x2="5" y2="20" stroke="#8D6E63" stroke-width="1" />
+      <line x1="10" y1="0" x2="10" y2="20" stroke="#8D6E63" stroke-width="1" />
+      <line x1="15" y1="0" x2="15" y2="20" stroke="#8D6E63" stroke-width="1" />
+      <line x1="0" y1="5" x2="20" y2="5" stroke="#8D6E63" stroke-width="1" />
+      <line x1="0" y1="10" x2="20" y2="10" stroke="#8D6E63" stroke-width="1" />
+      <line x1="0" y1="15" x2="20" y2="15" stroke="#8D6E63" stroke-width="1" />
+    </pattern>
+    <rect x="200" y="180" width="415" height="120" fill="url(#bamboo-wall)" />
+    <!-- 竹制门窗 -->
+    <rect x="350" y="200" width="50" height="80" fill="none" stroke="#5D4037" stroke-width="2" />
+    <path d="M350,200 L400,240 L350,280" fill="none" stroke="#5D4037" stroke-width="1" />
+  </g>
+
+  <!-- 4. 屋顶层（最上层） -->
+  <g id="layer-4" class="structure-layer" transform="translate(0, 0)">
+    <!-- 陡峭尖顶草棚 -->
+    <path d="M150,180 L400,40 L650,180 L650,200 L150,200 Z" fill="#795548" />
+    <!-- 棕榈叶纹理 -->
+    <pattern id="bamboo-roof" width="40" height="30" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <path d="M0,15 Q10,0 20,15 T40,15" fill="#6D4C41" opacity="0.6" />
+      <path d="M0,25 Q10,10 20,25 T40,25" fill="#6D4C41" opacity="0.6" />
+    </pattern>
+    <path d="M150,180 L400,40 L650,180 L650,200 L150,200 Z" fill="url(#bamboo-roof)" />
+    <!-- 屋顶脊线 -->
+    <line x1="400" y1="40" x2="400" y2="200" stroke="#5D4037" stroke-width="3" />
+  </g>
+</svg>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>互动投票</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .vote-btn { margin: 10px; padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>你最喜欢哪种传统民居？</h1>
+    <div id="vote-buttons">
+      <button class="vote-btn" onclick="vote('huizhou')">徽派民居</button>
+      <button class="vote-btn" onclick="vote('yinkeng')">云南一颗印</button>
+      <button class="vote-btn" onclick="vote('cave_dwelling')">陕北窑洞</button>
+    </div>
+    <div id="vote-result" style="width: 100%; height: 400px; margin-top: 30px;"></div>
+    <a href="index.html">返回首页</a>
+  </div>
+
+  <script>
+    // 初始化投票数据（本地存储）
+    let voteData = JSON.parse(localStorage.getItem('votes')) || {
+      'huizhou': 0,
+      'yinkeng': 0,
+      'cave_dwelling': 0
+    };
+
+    // 初始化饼图
+    const chart = echarts.init(document.getElementById('vote-result'));
+    function updateChart() {
+      chart.setOption({
+        title: { text: '投票结果', left: 'center' },
+        tooltip: { trigger: 'item' },
+        series: [{
+          type: 'pie',
+          data: [
+            { name: '徽派民居', value: voteData.huizhou, itemStyle: { color: '#228B22' } },
+            { name: '云南一颗印', value: voteData.yinkeng, itemStyle: { color: '#1E90FF' } },
+            { name: '陕北窑洞', value: voteData.cave_dwelling, itemStyle: { color: '#CD853F' } }
+          ],
+          label: { show: true, formatter: '{b}: {c}票' }
+        }]
+      });
+    }
+    updateChart();
+
+    // 投票功能
+    function vote(id) {
+      voteData[id]++;
+      localStorage.setItem('votes', JSON.stringify(voteData));
+      updateChart();
+      alert('投票成功！');
+    }
+  </script>
+</body>
+</html>

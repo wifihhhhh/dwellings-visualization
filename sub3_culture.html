@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>传统民居建筑营造文化可视化分析</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <!-- 引入书法字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f9f6f0;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d2b48c' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            font-family: "Noto Serif SC", "SimSun", serif;
+            color: #5d4037;
+        }
+
+        .home-container {
+            text-align: center;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 标题样式 - 国风书法效果 */
+        .page-title {
+            font-size: 2.8rem;
+            margin: 30px 0;
+            color: #8B4513;
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+            padding: 0 20px;
+        }
+
+        .page-title::before,
+        .page-title::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 50px;
+            height: 1px;
+            background-color: #8B4513;
+        }
+
+        .page-title::before {
+            left: 0;
+            transform: translateX(-120%) translateY(-50%);
+        }
+
+        .page-title::after {
+            right: 0;
+            transform: translateX(120%) translateY(-50%);
+        }
+
+        /* 图表容器样式 - 卷轴效果（缩小尺寸） */
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .chart-card {
+            width: 48%;
+            height: 400px; /* 缩小高度 */
+            margin: 0 auto;
+            border: 1px solid #d2b48c;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background-color: #fffbf0;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-card::before,
+        .chart-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 30px;
+            height: 100%;
+            background-color: rgba(210, 180, 140, 0.1);
+            z-index: 1;
+        }
+
+        .chart-card::before {
+            left: 0;
+            border-right: 1px dashed #d2b48c;
+        }
+
+        .chart-card::after {
+            right: 0;
+            border-left: 1px dashed #d2b48c;
+        }
+
+        /* 装饰元素 */
+        .decor-pattern {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .decor-top-left {
+            top: 10px;
+            left: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%238B4513' d='M10,10 L50,10 L50,50 L10,50 Z M60,60 L100,60 L100,100 L60,100 Z'/%3E%3C/svg%3E");
+        }
+
+        .decor-top-right {
+            top: 10px;
+            right: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%238B4513' d='M50,10 L90,10 L90,50 L50,50 Z M0,60 L40,60 L40,100 L0,100 Z'/%3E%3C/svg%3E");
+        }
+
+        .decor-bottom-left {
+            bottom: 10px;
+            left: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%238B4513' d='M10,50 L50,50 L50,90 L10,90 Z M60,0 L100,0 L100,40 L60,40 Z'/%3E%3C/svg%3E");
+        }
+
+        .decor-bottom-right {
+            bottom: 10px;
+            right: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%238B4513' d='M50,50 L90,50 L90,90 L50,90 Z M0,0 L40,0 L40,40 L0,40 Z'/%3E%3C/svg%3E");
+        }
+
+        /* 图表标题样式 */
+        .chart-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-weight: 600;
+            color: #8B4513;
+            z-index: 10;
+            background-color: rgba(255,251,240,0.8);
+            padding: 3px 15px;
+            border-radius: 4px;
+            border: 1px dashed #d2b48c;
+        }
+
+        #familySizeChart, #functionalAreaChart, #culturalSymbolsChart {
+            width: 100%;
+            height: calc(100% - 50px);
+            margin-top: 50px;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* 横向轮播图样式（适配缩小容器） */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s linear; /* 匀速滚动 */
+        }
+
+        .carousel-slide {
+            flex: 0 0 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 多图布局+间距 */
+        .image-group {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .image-item {
+            position: relative;
+            width: 30%; /* 每张图占30%宽度，留出间距 */
+            height: 75%; /* 适配缩小容器 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: default;
+        }
+
+        .carousel-image {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+            border: 1px solid #f0e6d2;
+        }
+
+        /* 跟随光标弹窗样式（国风卷轴卡片） */
+        .carousel-tooltip {
+            position: fixed; /* 固定定位跟随光标 */
+            padding: 12px;
+            border-radius: 4px;
+            background: rgba(255, 255, 240, 0.95);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            text-align: center;
+            border: 1px solid #d2b48c;
+            animation: fadeIn 0.5s ease-in-out;
+            max-width: 180px;
+            font-size: 12px;
+            color: #5d4037;
+            z-index: 100;
+            pointer-events: none; /* 避免遮挡鼠标事件 */
+        }
+
+        /* 轮播控制按钮（国风样式） */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border: 1px solid #d2b48c;
+            border-radius: 50%;
+            background: rgba(255,251,240,0.8);
+            color: #8B4513;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+            background: #fffbf0;
+            color: #5d4037;
+            border-color: #8B4513;
+        }
+
+        .carousel-btn.prev {
+            left: 40px;
+        }
+
+        .carousel-btn.next {
+            right: 40px;
+        }
+
+        /* 自定义tooltip样式 - 卷轴卡片 */
+        .custom-tooltip {
+            padding: 15px;
+            border-radius: 4px;
+            background: rgba(255, 255, 240, 0.95);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            text-align: center;
+            border: 1px solid #d2b48c;
+            animation: fadeIn 0.5s ease-in-out;
+            max-width: 180px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 底部链接样式 */
+        .footer-links {
+            margin: 30px 0;
+            padding: 15px;
+            border-top: 1px dashed #d2b48c;
+            font-size: 1.1rem;
+        }
+
+        .footer-links a {
+            color: #8B4513;
+            text-decoration: none;
+            padding: 0 10px;
+            position: relative;
+        }
+
+        .footer-links a::after {
+            content: "|";
+            margin-left: 20px;
+            color: #d2b48c;
+        }
+
+        .footer-links a:last-child::after {
+            content: "";
+        }
+
+        .footer-links a:hover {
+            color: #5d4037;
+            text-decoration: underline;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .chart-card {
+                width: 100%;
+                height: 350px;
+            }
+
+            .carousel-btn.prev {
+                left: 20px;
+            }
+
+            .carousel-btn.next {
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="home-container">
+        <h1 class="page-title">传统民居建筑营造智慧可视化分析</h1>
+        
+        <div class="chart-container">
+            <!-- 1. 建筑布局与家族规模（旭日图） -->
+            <div class="chart-card">
+                <div class="decor-pattern decor-top-left"></div>
+                <div class="decor-pattern decor-top-right"></div>
+                <div class="decor-pattern decor-bottom-left"></div>
+                <div class="decor-pattern decor-bottom-right"></div>
+                <div class="chart-title">建筑布局与家族规模（旭日图）</div>
+                <div id="familySizeChart"></div>
+            </div>
+
+            <!-- 2. 功能分区的等级差异（堆叠柱状图） -->
+            <div class="chart-card">
+                <div class="decor-pattern decor-top-left"></div>
+                <div class="decor-pattern decor-top-right"></div>
+                <div class="decor-pattern decor-bottom-left"></div>
+                <div class="decor-pattern decor-bottom-right"></div>
+                <div class="chart-title">功能分区的等级差异（按活动类型分类）</div>
+                <div id="functionalAreaChart"></div>
+            </div>
+
+            <!-- 3. 装饰元素的文化符号（横向轮播图） -->
+            <div class="chart-card" style="width: 98%;">
+                <div class="decor-pattern decor-top-left"></div>
+                <div class="decor-pattern decor-top-right"></div>
+                <div class="decor-pattern decor-bottom-left"></div>
+                <div class="decor-pattern decor-bottom-right"></div>
+                <div class="chart-title">装饰元素的文化符号</div>
+                <div id="culturalSymbolsChart" class="carousel-container">
+                    <div class="carousel-track" id="carouselTrack">
+                        <!-- 轮播图幻灯片 -->
+                        <div class="carousel-slide">
+                            <div class="image-group">
+                                <div class="image-item" data-tooltip="华北四合院 · 回纹影壁（吉祥循环）">
+                                    <img src="data/images/纹样-1回纹影壁.jpg" alt="华北四合院·回纹影壁" class="carousel-image">
+                                </div>
+                                <div class="image-item" data-tooltip="华北四合院 · 莲纹门簪（清廉圣洁）">
+                                    <img src="data/images/纹样-1莲纹门簪.jpg" alt="华北四合院·莲纹门簪" class="carousel-image">
+                                </div>
+                                <div class="image-item" data-tooltip="华北四合院 · 荷叶纹雀替（高洁清雅）">
+                                    <img src="data/images/纹样-1蓝绿荷叶纹雀替.jpg" alt="华北四合院·荷叶纹雀替" class="carousel-image">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <div class="image-group">
+                                <div class="image-item" data-tooltip="徽派民居 · 山水纹砖雕（文人意境）">
+                                    <img src="data/images/纹样-2山水纹砖雕.jpg" alt="徽派民居·山水纹砖雕" class="carousel-image">
+                                </div>
+                                <div class="image-item" data-tooltip="徽派民居 · 人物故事木雕（宗法伦理）">
+                                    <img src="data/images/纹样-2人物故事木雕.jpg" alt="徽派民居·人物故事木雕" class="carousel-image">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <div class="image-group">
+                                <div class="image-item" data-tooltip="岭南骑楼 · 岭南佳果壁画（丰收富足）">
+                                    <img src="data/images/纹样-3岭南佳果壁画.jpg" alt="岭南骑楼·岭南佳果壁画" class="carousel-image">
+                                </div>
+                                <div class="image-item" data-tooltip="岭南骑楼 · 绶带纹山花（吉庆绵延）">
+                                    <img src="data/images/纹样-3绶带纹山花.jpg" alt="岭南骑楼·绶带纹山花" class="carousel-image">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <div class="image-group">
+                                <div class="image-item" data-tooltip="陕北窑洞 · 几何窗花（简约实用）">
+                                    <img src="data/images/纹样-4几何窗花.jpg" alt="陕北窑洞·几何窗花" class="carousel-image">
+                                </div>
+                                <div class="image-item" data-tooltip="陕北窑洞 · 植物纹壁绘（农耕生机）">
+                                    <img src="data/images/纹样-4植物纹壁绘.jpg" alt="陕北窑洞·植物纹壁绘" class="carousel-image">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <div class="image-group">
+                                <div class="image-item" data-tooltip="傣族竹楼 · 孔雀纹（图腾祥瑞）">
+                                    <img src="data/images/纹样-5孔雀纹门头装饰.jpg" alt="傣族竹楼·孔雀纹" class="carousel-image">
+                                </div>
+                                <div class="image-item" data-tooltip="傣族竹楼 · 竹编纹（自然质朴）">
+                                    <img src="data/images/纹样-5竹编纹竹编墙.jpg" alt="傣族竹楼·竹编纹" class="carousel-image">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 轮播控制按钮 -->
+                    <button class="carousel-btn prev" id="prevBtn">&lt;</button>
+                    <button class="carousel-btn next" id="nextBtn">&gt;</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <a href="#">民居文化概述</a>
+            <a href="#">建筑数据来源</a>
+            <a href="#">地域风格对比</a>
+            <a href="#">传统工艺介绍</a>
+        </div>
+    </div>
+
+    <!-- 跟随光标弹窗 -->
+    <div class="carousel-tooltip" id="followTooltip"></div>
+
+    <script>
+        // 精准数据源（完全匹配表格数据）
+        var familySizeData = [
+            {
+                name: '华北·北京四合院',
+                itemStyle: { color: '#8B4513' },
+                totalArea: '837.0㎡',
+                children: [
+                    { name: '堂屋', value: 6.7, itemStyle: { color: '#8B4513' }, area: '55.7㎡' },
+                    { name: '正房耳房', value: 3.0, itemStyle: { color: '#8B4513' }, area: '25.5㎡' },
+                    { name: '东厢房', value: 4.4, itemStyle: { color: '#8B4513' }, area: '37.1㎡' },
+                    { name: '西厢房', value: 4.4, itemStyle: { color: '#8B4513' }, area: '37.1㎡' },
+                    { name: '后罩房', value: 10.5, itemStyle: { color: '#8B4513' }, area: '88.0㎡' },
+                    { name: '倒座', value: 10.5, itemStyle: { color: '#8B4513' }, area: '88.0㎡' },
+                    { name: '庭院', value: 60.5, itemStyle: { color: '#8B4513' }, area: '505.6㎡' }
+                ]
+            },
+            {
+                name: '华东·安徽徽派民居',
+                itemStyle: { color: '#A0522D' },
+                totalArea: '147.0㎡',
+                children: [
+                    { name: '正厅', value: 22.1, itemStyle: { color: '#A0522D' }, area: '32.4㎡' },
+                    { name: '两厢房', value: 17.6, itemStyle: { color: '#A0522D' }, area: '25.8㎡' },
+                    { name: '廊房', value: 12.7, itemStyle: { color: '#A0522D' }, area: '18.6㎡' },
+                    { name: '天井', value: 6.1, itemStyle: { color: '#A0522D' }, area: '9.0㎡' },
+                    { name: '辅助', value: 41.5, itemStyle: { color: '#A0522D' }, area: '61.2㎡' }
+                ]
+            },
+            {
+                name: '华南·岭南骑楼',
+                itemStyle: { color: '#CD853F' },
+                totalArea: '81.0㎡',
+                children: [
+                    { name: '一层厅堂', value: 44.4, itemStyle: { color: '#CD853F' }, area: '36.0㎡' },
+                    { name: '厨房', value: 19.5, itemStyle: { color: '#CD853F' }, area: '15.8㎡' },
+                    { name: '神楼', value: 12.2, itemStyle: { color: '#CD853F' }, area: '9.9㎡' },
+                    { name: '二层卧室', value: 36.2, itemStyle: { color: '#CD853F' }, area: '29.3㎡' },
+                    { name: '楼梯/卫生间', value: 11.1, itemStyle: { color: '#CD853F' }, area: '9.0㎡' }
+                ]
+            },
+            {
+                name: '西南·云南傣族竹楼',
+                itemStyle: { color: '#D2691E' },
+                totalArea: '129.2㎡',
+                children: [
+                    { name: '上层正房', value: 34.9, itemStyle: { color: '#D2691E' }, area: '45.1㎡' },
+                    { name: '晒台', value: 32.5, itemStyle: { color: '#D2691E' }, area: '42.0㎡' },
+                    { name: '前廊', value: 14.6, itemStyle: { color: '#D2691E' }, area: '18.9㎡' },
+                    { name: '谷仓+春米', value: 18.0, itemStyle: { color: '#D2691E' }, area: '23.2㎡' }
+                ]
+            },
+            {
+                name: '西北·陕西陕北窑洞',
+                itemStyle: { color: '#DEB887' },
+                totalArea: '175.0㎡',
+                children: [
+                    { name: '主窑', value: 30.1, itemStyle: { color: '#DEB887' }, area: '26.4㎡' },
+                    { name: '厢房窑', value: 60.2, itemStyle: { color: '#DEB887' }, area: '105.6㎡' },
+                    { name: '入口坡道', value: 9.7, itemStyle: { color: '#DEB887' }, area: '17.0㎡' }
+                ]
+            }
+        ];
+
+        // 功能分区数据（按“主要活动区域、起居区域、其它区域”归类）
+        const functionalAreaData = [
+            { region: '北京四合院', 主要活动区域: 67.2, 起居区域: 22.8, 其它区域: 10 },
+            { region: '安徽徽派民居', 主要活动区域: 41.4, 起居区域: 17.6, 其它区域: 41 },
+            { region: '岭南骑楼',    主要活动区域: 44.4, 起居区域: 36.2, 其它区域: 19.4 },
+            { region: '傣族竹楼',    主要活动区域: 47.5, 起居区域: 34.9, 其它区域: 17.6 },
+            { region: '陕北窑洞',    主要活动区域: 30.1, 起居区域: 60.2, 其它区域: 9.7 }
+        ];
+
+        // 图表1：精准数据旭日图（适配国风样式）
+        const familySizeChart = echarts.init(document.getElementById('familySizeChart'));
+        const familySizeOption = {
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params) {
+                    let content = `<div class="custom-tooltip">`;
+                    if (params.data.totalArea) {
+                        content += `<div class="tooltip-name">${params.data.name}</div>`;
+                        content += `<div class="tooltip-location">总面积：${params.data.totalArea}</div>`;
+                    } else {
+                        content += `<div class="tooltip-name">${params.data.name}</div>`;
+                        content += `<div class="tooltip-location">面积：${params.data.area}</div>`;
+                        content += `<div class="tooltip-location">占比：${params.data.value}%</div>`;
+                    }
+                    content += `</div>`;
+                    return content;
+                }
+            },
+            series: [
+                {
+                    type: 'sunburst',
+                    data: familySizeData,
+                    radius: [0, '85%'],
+                    center: ['50%', '50%'],
+                    sort: null,
+                    label: {
+                        rotate: 'radial',
+                        color: '#ffffff',
+                        fontSize: 10,
+                        fontWeight: 600
+                    },
+                    itemStyle: {
+                        borderColor: '#fffbf0',
+                        borderWidth: 2,
+                        borderRadius: 4
+                    },
+                    emphasis: {
+                        focus: 'descendant',
+                        itemStyle: {
+                            shadowBlur: 8,
+                            shadowColor: 'rgba(139,69,19,0.2)',
+                            borderWidth: 3
+                        },
+                        label: {
+                            fontSize: 12,
+                            formatter: params => params.name
+                        }
+                    }
+                }
+            ]
+        };
+        familySizeChart.setOption(familySizeOption);
+
+        // 图表2：功能分区堆叠柱状图（适配国风样式）
+        const functionalAreaChart = echarts.init(document.getElementById('functionalAreaChart'));
+        const regions = functionalAreaData.map(d => d.region);
+        const areaTypes = ['主要活动区域', '起居区域', '其它区域'];
+        const colorMap = {
+            '主要活动区域': '#8B4513',
+            '起居区域': '#A0522D',
+            '其它区域': '#CD853F'
+        };
+        const stackData = areaTypes.map(type => {
+            return {
+                name: type,
+                type: 'bar',
+                stack: '总量',
+                data: functionalAreaData.map(d => d[type]),
+                itemStyle: { color: colorMap[type] },
+                label: {
+                    show: false
+                }
+            };
+        });
+        const functionalAreaOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                formatter: function (params) {
+                    let content = `<div class="custom-tooltip">`;
+                    content += `<div class="tooltip-name">${params[0].axisValue}</div>`;
+                    params.forEach(p => {
+                        if (p.value > 0) {
+                            content += `<div class="tooltip-location">${p.seriesName}：${p.value}%</div>`;
+                        }
+                    });
+                    content += `</div>`;
+                    return content;
+                }
+            },
+            legend: {
+                data: areaTypes,
+                top: 0,
+                left: 'center',
+                textStyle: {
+                    color: '#5d4037',
+                    fontSize: 11
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: regions,
+                axisLabel: { 
+                    rotate: 15,
+                    color: '#5d4037',
+                    fontSize: 10
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: '#d2b48c'
+                    }
+                }
+            },
+            yAxis: { 
+                type: 'value', 
+                name: '面积占比（%）',
+                max: 100,
+                nameTextStyle: {
+                    color: '#5d4037',
+                    fontSize: 11
+                },
+                axisLabel: {
+                    color: '#5d4037',
+                    fontSize: 10
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: '#d2b48c'
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: 'rgba(210,180,140,0.2)'
+                    }
+                }
+            },
+            grid: {
+                top: '30px',
+                left: '40px',
+                right: '30px',
+                bottom: '40px'
+            },
+            series: stackData
+        };
+        functionalAreaChart.setOption(functionalAreaOption);
+
+        // 横向轮播图逻辑
+        const carouselTrack = document.getElementById('carouselTrack');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const slides = document.querySelectorAll('.carousel-slide');
+        let currentIndex = 0;
+        const slideWidth = 100; // 百分比
+
+        // 匀速滚动函数
+        function updateCarousel() {
+            carouselTrack.style.transform = `translateX(-${currentIndex * slideWidth}%)`;
+        }
+
+        // 按钮控制
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            updateCarousel();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateCarousel();
+        });
+
+        // 自动匀速轮播
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateCarousel();
+        }, 5000); // 每5秒滚动一次
+
+        // 跟随光标弹窗逻辑
+        const followTooltip = document.getElementById('followTooltip');
+        const imageItems = document.querySelectorAll('.image-item');
+        
+        // 鼠标移入显示弹窗
+        imageItems.forEach(item => {
+            item.addEventListener('mousemove', (e) => {
+                const tooltipText = item.dataset.tooltip;
+                followTooltip.textContent = tooltipText;
+                // 弹窗位置跟随光标（偏移10px避免遮挡）
+                followTooltip.style.left = `${e.clientX + 10}px`;
+                followTooltip.style.top = `${e.clientY + 10}px`;
+                followTooltip.style.opacity = '1';
+                followTooltip.style.visibility = 'visible';
+            });
+
+            // 鼠标移出隐藏弹窗
+            item.addEventListener('mouseleave', () => {
+                followTooltip.style.opacity = '0';
+                followTooltip.style.visibility = 'hidden';
+            });
+        });
+
+        // 窗口自适应
+        window.addEventListener('resize', function() {
+            familySizeChart.resize();
+            functionalAreaChart.resize();
+        });
+    </script>
+</body>
+</html>

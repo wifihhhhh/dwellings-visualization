@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>中国古代民居地域文化图谱</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+  <style>
+    /* 仅新增/修改布局相关样式，不改动原有其他样式 */
+    .content-wrapper {
+      display: flex;
+      flex-direction: column; /* 改为纵向布局：地图在上，按钮在下 */
+      align-items: center; /* 水平居中 */
+      gap: 30px; /* 地图与按钮间距 */
+      width: 100%;
+      max-width: 1300px;
+      margin: 30px auto;
+    }
+
+    /* 地图容器保持原有宽度与样式 */
+    .map-container {
+      width: 100%;
+      min-width: 600px;
+      height: 550px;
+      margin: 0; /* 清除原有外边距，由content-wrapper控制间距 */
+    }
+
+    /* 按钮容器：横向并排+均匀分布 */
+    #button-nav {
+      display: flex;
+      flex-direction: row; /* 强制横向排列 */
+      justify-content: space-between; /* 均匀分布 */
+      width: 100%;
+      gap: 20px; /* 按钮之间间距 */
+      padding: 0;
+      margin: 0;
+    }
+
+    /* 按钮：平均分配宽度，确保大小一致 */
+    .nav-button {
+      flex: 1; /* 四个按钮均分父容器宽度 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 15px 10px;
+      /* 保留原有按钮样式，仅确保适配横向布局 */
+    }
+
+    /* 图标保持居中显示 */
+    .s-icon {
+      margin: 0 auto 8px;
+    }
+
+    /* 响应式适配：小屏幕下按钮换行 */
+    @media (max-width: 768px) {
+      #button-nav {
+        flex-wrap: wrap; /* 屏幕过窄时按钮换行 */
+      }
+      .nav-button {
+        flex: 0 0 45%; /* 换行后每行2个按钮 */
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="home-container">
+    <h1 class="page-title">中国古代民居地域文化图谱</h1>
+    
+    <div class="content-wrapper">
+      <!-- 地图容器（卷轴）：保持原有所有配置 -->
+      <div id="map" class="map-container">
+        <div class="decor-pattern decor-top-left"></div>
+        <div class="decor-pattern decor-top-right"></div>
+        <div class="decor-pattern decor-bottom-left"></div>
+        <div class="decor-pattern decor-bottom-right"></div>
+      </div>
+
+      <!-- 按钮导航：移至地图下方，并排均匀分布 -->
+      <div id="button-nav">
+        <a class="nav-button" href="sub1_adaption.html">
+          <svg class="s-icon" viewBox="0 0 200 200"><use href="#icon-adaption"/></svg>
+          <span class="s-text">地域适应性</span>
+        </a>
+        <a class="nav-button" href="sub2_intelligence.html">
+          <svg class="s-icon" viewBox="0 0 200 200"><use href="#icon-intelligence"/></svg>
+          <span class="s-text">建筑智慧</span>
+        </a>
+        <a class="nav-button" href="sub3_culture.html">
+          <svg class="s-icon" viewBox="0 0 200 200"><use href="#icon-culture"/></svg>
+          <span class="s-text">文化关联</span>
+        </a>
+        <a class="nav-button" href="sub4_future.html">
+          <svg class="s-icon" viewBox="0 0 200 200"><use href="#icon-future"/></svg>
+          <span class="s-text">传统×现代</span>
+        </a>
+      </div>
+    </div>
+
+    <svg style="display:none;">
+      <symbol id="icon-adaption" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#fffaf0"/>
+        <path d="M0 140 Q50 100 100 140 T200 140 L200 200 L0 200 Z" fill="#a1887f" opacity=".6"/>
+        <path d="M40 160 Q80 120 120 160 L40 160 Z" fill="#8b4513"/>
+        <path d="M60 160 L100 140 L140 160 Z" fill="#5d4037"/>
+        <circle cx="160" cy="50" r="18" fill="none" stroke="#d7ccc8" stroke-width="3"/>
+      </symbol>
+      <symbol id="icon-intelligence" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#fffaf0"/>
+        <rect x="70" y="90" width="60" height="30" fill="#8b4513"/>
+        <rect x="60" y="80" width="80" height="10" fill="#a1887f"/>
+        <rect x="50" y="70" width="100" height="10" fill="#8b4513"/>
+        <rect x="90" y="120" width="20" height="25" fill="#5d4037"/>
+        <line x1="100" y1="70" x2="100" y2="50" stroke="#6d4c41" stroke-width="2"/>
+      </symbol>
+      <symbol id="icon-culture" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#fffaf0"/>
+        <g stroke="#8b4513" stroke-width="3" fill="none">
+          <rect x="60" y="60" width="80" height="80"/>
+          <rect x="80" y="80" width="40" height="40"/>
+        </g>
+        <rect x="140" y="130" width="30" height="35" fill="#bf360c"/>
+        <text x="155" y="150" font-size="22" fill="#fffaf0" text-anchor="middle">文</text>
+      </symbol>
+      <symbol id="icon-future" viewBox="0 0 200 200">
+        <rect width="200" height="200" fill="#fffaf0"/>
+        <path d="M40 100 L100 70 L160 100 Z" fill="#8b4513"/>
+        <g stroke="#a1887f" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="50" y1="130" x2="150" y2="130"/>
+          <polyline points="135,120 150,130 135,140"/>
+        </g>
+        <circle cx="100" cy="100" r="65" fill="none" stroke="#d7ccc8" stroke-width="2"/>
+      </symbol>
+    </svg>
+
+    <div class="footer-links">
+      点击地图上的标记查看对应民居详情 | 
+      <a href="vote.html">参与投票</a>
+    </div>
+  </div>
+
+  <script>
+    // 核心修改：替换为五种民居数据（含正确经纬度）
+    const dwellings = [
+      {
+        "id": "siheyuan",
+        "name": "北京四合院",
+        "location": "北京城区及周边",
+        "coordinate": [116.4, 39.9],
+        "color": "#FF6347",
+        "silhouette": "data/images/北京四合院.png"
+      },
+      {
+        "id": "huizhou",
+        "name": "徽派民居",
+        "location": "安徽宏村、西递",
+        "coordinate": [118.1, 30.1],
+        "color": "#228B22",
+        "silhouette": "data/images/徽派民居.png"
+      },
+      {
+        "id": "qilou",
+        "name": "岭南骑楼",
+        "location": "广东广州、汕头",
+        "coordinate": [113.2, 23.1],
+        "color": "#4169E1",
+        "silhouette": "data/images/岭南骑楼.png"
+      },
+      {
+        "id": "bamboo",
+        "name": "傣族竹楼",
+        "location": "云南西双版纳",
+        "coordinate": [100.8, 22.0],
+        "color": "#32CD32",
+        "silhouette": "data/images/傣族竹楼.png"
+      },
+      {
+        "id": "cave_dwelling",
+        "name": "陕北窑洞",
+        "location": "陕西延安、榆林",
+        "coordinate": [109.4, 36.6],
+        "color": "#CD853F",
+        "silhouette": "data/images/陕北窑洞.png"
+      }
+    ];
+
+    window.onload = function() {
+      const mapChart = echarts.init(document.getElementById('map'));
+
+      const option = {
+        title: {
+          text: '中国古代典型民居分布',
+          left: 'center',
+          textStyle: {
+            color: '#8B4513',
+            fontFamily: "Noto Serif SC, SimSun, serif",
+            fontSize: 18,
+            padding: [0, 0, 20, 0]
+          }
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function(params) {
+            const dwelling = dwellings.find(d => d.name === params.name);
+            return `
+              <div class="custom-tooltip">
+                <img class="tooltip-silhouette" src="${dwelling.silhouette}" alt="${dwelling.name}剪影">
+                <div class="tooltip-name">${dwelling.name}</div>
+                <div class="tooltip-location">${dwelling.location}</div>
+              </div>
+            `;
+          },
+          useHTML: true,
+          position: function(point) {
+            return [point[0] + 10, point[1] - 140];
+          },
+          backgroundColor: 'transparent',
+          borderColor: 'transparent',
+          padding: 0
+        },
+        geo: {
+          map: 'china',
+          roam: false,
+          itemStyle: {
+            areaColor: '#fff8e1',
+            borderColor: '#d7ccc8',
+            borderWidth: 1.5
+          },
+          label: {
+            show: true,
+            fontSize: 10,
+            color: '#6d4c41'
+          },
+          emphasis: {
+            itemStyle: {
+              areaColor: '#f5f5dc'
+            }
+          }
+        },
+        series: [
+          {
+            type: 'scatter',
+            coordinateSystem: 'geo',
+            data: dwellings.map(d => ({
+              name: d.name,
+              value: d.coordinate,
+              itemStyle: { 
+                color: d.color,
+                borderColor: '#fff',
+                borderWidth: 2,
+                shadowBlur: 10,
+                shadowColor: 'rgba(0,0,0,0.2)'
+              }
+            })),
+            symbolSize: 18,
+            emphasis: {
+              symbolSize: 22,
+              itemStyle: {
+                shadowBlur: 15
+              }
+            }
+          }
+        ]
+      };
+
+      mapChart.setOption(option);
+
+      mapChart.on('click', function(params) {
+        const dwelling = dwellings.find(d => d.name === params.name);
+        if (dwelling) {
+          localStorage.setItem('currentDwelling', JSON.stringify(dwelling));
+          window.location.href = 'detail.html';
+        }
+      });
+
+      window.addEventListener('resize', () => mapChart.resize());
+    };
+  </script>
+</body>
+</html>

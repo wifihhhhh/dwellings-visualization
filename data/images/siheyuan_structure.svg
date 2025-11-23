@@ -1,0 +1,89 @@
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg" id="siheyuan-svg">
+  <style>
+    .structure-layer { transition: all 1s ease; }
+    .text-style { font-family: "SimSun", serif; font-size: 14px; fill: #333; }
+  </style>
+
+  <!-- 1. 地面层（最下层：院落地面+甬道） -->
+  <g id="layer-1" class="structure-layer" transform="translate(0, 0)">
+    <!-- 整体院落青石板地面 -->
+    <rect x="100" y="100" width="600" height="350" fill="#795548" />
+    <!-- 石板纹理 -->
+    <pattern id="ground-pattern" width="30" height="30" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="30" height="30" fill="#795548" />
+      <rect x="0" y="0" width="30" height="1" fill="#5d4037" />
+      <rect x="0" y="0" width="1" height="30" fill="#5d4037" />
+    </pattern>
+    <rect x="100" y="100" width="600" height="350" fill="url(#ground-pattern)" />
+    <!-- 中轴甬道（连接大门与垂花门） -->
+    <rect x="380" y="100" width="40" height="350" fill="#5d4037" />
+    <!-- 大门外街道 -->
+    <rect x="100" y="70" width="600" height="30" fill="#6d4c41" />
+  </g>
+
+  <!-- 2. 院落层（第二层：房屋基座+院落空间） -->
+  <g id="layer-2" class="structure-layer" transform="translate(0, 0)">
+    <!-- 正房基座（北房） -->
+    <rect x="320" y="100" width="160" height="80" fill="#d7ccc8" stroke="#8B4513" stroke-width="2" />
+    <!-- 东、西厢房基座 -->
+    <rect x="180" y="220" width="120" height="80" fill="#d7ccc8" stroke="#8B4513" stroke-width="2" />
+    <rect x="500" y="220" width="120" height="80" fill="#d7ccc8" stroke="#8B4513" stroke-width="2" />
+    <!-- 倒座房基座（南房，大门两侧） -->
+    <rect x="320" y="370" width="160" height="80" fill="#d7ccc8" stroke="#8B4513" stroke-width="2" />
+    <!-- 垂花门基座（中轴线上） -->
+    <rect x="370" y="180" width="60" height="40" fill="#8B4513" />
+    <!-- 院墙基座 -->
+    <rect x="150" y="100" width="500" height="350" fill="transparent" stroke="#8B4513" stroke-width="3" />
+  </g>
+
+  <!-- 3. 主体结构层（第三层：房屋主体+门窗） -->
+  <g id="layer-3" class="structure-layer" transform="translate(0, 0)">
+    <!-- 正房主体（北房，三间） -->
+    <rect x="320" y="100" width="160" height="80" fill="#f5f5f5" stroke="#BDBDBD" stroke-width="1" />
+    <rect x="340" y="120" width="40" height="40" fill="none" stroke="#8B4513" stroke-width="1.5" /> <!-- 正房门窗 -->
+    <rect x="390" y="120" width="40" height="40" fill="none" stroke="#8B4513" stroke-width="1.5" />
+    <rect x="440" y="120" width="40" height="40" fill="none" stroke="#8B4513" stroke-width="1.5" />
+    
+    <!-- 东、西厢房主体 -->
+    <rect x="180" y="220" width="120" height="80" fill="#f5f5f5" stroke="#BDBDBD" stroke-width="1" />
+    <rect x="500" y="220" width="120" height="80" fill="#f5f5f5" stroke="#BDBDBD" stroke-width="1" />
+    <rect x="200" y="240" width="80" height="40" fill="none" stroke="#8B4513" stroke-width="1.5" /> <!-- 东厢房窗 -->
+    <rect x="520" y="240" width="80" height="40" fill="none" stroke="#8B4513" stroke-width="1.5" /> <!-- 西厢房窗 -->
+    
+    <!-- 倒座房主体（南房） -->
+    <rect x="320" y="370" width="160" height="80" fill="#f5f5f5" stroke="#BDBDBD" stroke-width="1" />
+    <rect x="380" y="390" width="40" height="40" fill="none" stroke="#8B4513" stroke-width="1.5" /> <!-- 大门 -->
+    
+    <!-- 垂花门主体 -->
+    <path d="M370,180 L400,160 L430,180 Z" fill="#D7CCC8" />
+    <rect x="385" y="180" width="30" height="40" fill="#f5f5f5" stroke="#8B4513" stroke-width="1" />
+  </g>
+
+  <!-- 4. 屋顶层（最上层：四合房屋顶） -->
+  <g id="layer-4" class="structure-layer" transform="translate(0, 0)">
+    <!-- 正房硬山顶（双坡） -->
+    <path d="M300,80 L400,60 L500,80 L520,100 L280,100 Z" fill="#424242" />
+    <!-- 屋顶瓦纹 -->
+    <pattern id="roof-tile" width="25" height="15" patternUnits="userSpaceOnUse" patternTransform="rotate(15)">
+      <rect x="0" y="0" width="25" height="7" fill="#424242" />
+      <rect x="0" y="7" width="25" height="8" fill="#212121" />
+    </pattern>
+    <path d="M300,80 L400,60 L500,80 L520,100 L280,100 Z" fill="url(#roof-tile)" />
+    <line x1="400" y1="60" x2="400" y2="100" stroke="#616161" stroke-width="3" /> <!-- 正房屋脊 -->
+    
+    <!-- 东厢房屋顶 -->
+    <path d="M160,200 L240,180 L320,200 L320,220 L160,220 Z" fill="#424242" />
+    <path d="M160,200 L240,180 L320,200 L320,220 L160,220 Z" fill="url(#roof-tile)" />
+    <line x1="240" y1="180" x2="240" y2="220" stroke="#616161" stroke-width="2" /> <!-- 东厢房脊 -->
+    
+    <!-- 西厢房屋顶 -->
+    <path d="M480,200 L560,180 L640,200 L640,220 L480,220 Z" fill="#424242" />
+    <path d="M480,200 L560,180 L640,200 L640,220 L480,220 Z" fill="url(#roof-tile)" />
+    <line x1="560" y1="180" x2="560" y2="220" stroke="#616161" stroke-width="2" /> <!-- 西厢房脊 -->
+    
+    <!-- 倒座房屋顶 -->
+    <path d="M300,350 L400,330 L500,350 L520,370 L280,370 Z" fill="#424242" />
+    <path d="M300,350 L400,330 L500,350 L520,370 L280,370 Z" fill="url(#roof-tile)" />
+    <line x1="400" y1="330" x2="400" y2="370" stroke="#616161" stroke-width="3" /> <!-- 倒座房屋脊 -->
+  </g>
+</svg>

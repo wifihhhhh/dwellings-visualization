@@ -1,0 +1,99 @@
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg" id="qilou-svg">
+  <style>
+    .structure-layer { transition: all 1s ease; }
+    .text-style { font-family: "SimSun", serif; font-size: 14px; fill: #333; }
+  </style>
+
+  <!-- 1. 地面层（最下层：街道+排水，最底部无漂浮元素） -->
+  <g id="layer-1" class="structure-layer" transform="translate(0, 0)">
+    <!-- 骑楼下街道（石板路面） -->
+    <rect x="100" y="380" width="600" height="70" fill="#795548" />
+    <!-- 石板纹理 -->
+    <pattern id="street-pattern" width="40" height="20" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="40" height="20" fill="#795548" />
+      <rect x="0" y="0" width="40" height="1" fill="#5d4037" />
+      <rect x="0" y="0" width="1" height="20" fill="#5d4037" />
+    </pattern>
+    <rect x="100" y="380" width="600" height="70" fill="url(#street-pattern)" />
+    <!-- 街边排水明沟 -->
+    <rect x="120" y="430" width="560" height="5" fill="#3e2723" />
+    <!-- 人行道边线 -->
+    <line x1="100" y1="380" x2="700" y2="380" stroke="#5d4037" stroke-width="2" />
+  </g>
+
+  <!-- 2. 骑楼走廊层（第二层：立柱+走廊地面，完全承托上层） -->
+  <g id="layer-2" class="structure-layer" transform="translate(0, 0)">
+    <!-- 花岗岩立柱（均匀排列，无悬空） -->
+    <rect x="150" y="280" width="20" height="100" fill="#607D8B" />
+    <rect x="250" y="280" width="20" height="100" fill="#607D8B" />
+    <rect x="350" y="280" width="20" height="100" fill="#607D8B" />
+    <rect x="450" y="280" width="20" height="100" fill="#607D8B" />
+    <rect x="550" y="280" width="20" height="100" fill="#607D8B" />
+    <rect x="650" y="280" width="20" height="100" fill="#607D8B" />
+    <!-- 走廊地面（与立柱顶部平齐，承托上层建筑） -->
+    <rect x="150" y="280" width="520" height="10" fill="#D7CCC8" />
+    <!-- 立柱基座（与地面层衔接，无空隙） -->
+    <rect x="145" y="380" width="30" height="10" fill="#546E7A" />
+    <rect x="245" y="380" width="30" height="10" fill="#546E7A" />
+    <rect x="345" y="380" width="30" height="10" fill="#546E7A" />
+    <rect x="445" y="380" width="30" height="10" fill="#546E7A" />
+    <rect x="545" y="380" width="30" height="10" fill="#546E7A" />
+    <rect x="645" y="380" width="30" height="10" fill="#546E7A" />
+  </g>
+
+  <!-- 3. 主体建筑层（第三层：商铺+门窗，完全落在走廊层上） -->
+  <g id="layer-3" class="structure-layer" transform="translate(0, 0)">
+    <!-- 骑楼主体墙面（红砖肌理，底部与走廊层顶部衔接） -->
+    <rect x="150" y="180" width="520" height="100" fill="#F5F5F5" stroke="#BDBDBD" stroke-width="1" />
+    <pattern id="brick-pattern" width="20" height="10" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="20" height="10" fill="#F5F5F5" />
+      <rect x="0" y="0" width="20" height="1" fill="#BDBDBD" />
+      <rect x="0" y="5" width="20" height="1" fill="#BDBDBD" />
+      <rect x="10" y="0" width="1" height="10" fill="#BDBDBD" />
+    </pattern>
+    <rect x="150" y="180" width="520" height="100" fill="url(#brick-pattern)" />
+    <!-- 商铺门窗（连续矩形+顶部半圆，无漂浮半圆） -->
+    <!-- 门窗1 -->
+    <rect x="180" y="200" width="40" height="60" fill="none" stroke="#8B4513" stroke-width="2" />
+    <path d="M180,200 Q200,185 220,200" stroke="#8B4513" stroke-width="2" fill="none" />
+    <!-- 门窗2 -->
+    <rect x="280" y="200" width="40" height="60" fill="none" stroke="#8B4513" stroke-width="2" />
+    <path d="M280,200 Q300,185 320,200" stroke="#8B4513" stroke-width="2" fill="none" />
+    <!-- 门窗3 -->
+    <rect x="380" y="200" width="40" height="60" fill="none" stroke="#8B4513" stroke-width="2" />
+    <path d="M380,200 Q400,185 420,200" stroke="#8B4513" stroke-width="2" fill="none" />
+    <!-- 门窗4 -->
+    <rect x="480" y="200" width="40" height="60" fill="none" stroke="#8B4513" stroke-width="2" />
+    <path d="M480,200 Q500,185 520,200" stroke="#8B4513" stroke-width="2" fill="none" />
+    <!-- 门窗5 -->
+    <rect x="580" y="200" width="40" height="60" fill="none" stroke="#8B4513" stroke-width="2" />
+    <path d="M580,200 Q600,185 620,200" stroke="#8B4513" stroke-width="2" fill="none" />
+    <!-- 窗楣装饰（圆形与墙面衔接，无漂浮） -->
+    <circle cx="200" y="190" r="8" fill="#FF8F00" />
+    <circle cx="300" y="190" r="8" fill="#FF8F00" />
+    <circle cx="400" y="190" r="8" fill="#FF8F00" />
+    <circle cx="500" y="190" r="8" fill="#FF8F00" />
+    <circle cx="600" y="190" r="8" fill="#FF8F00" />
+  </g>
+
+  <!-- 4. 屋顶层（最上层：完整屋顶+女儿墙，完全覆盖主体层） -->
+  <g id="layer-4" class="structure-layer" transform="translate(0, 0)">
+    <!-- 骑楼坡屋顶（连续双坡，无断裂，覆盖整个主体层） -->
+    <path d="M130,180 L400,100 L670,180 L670,200 L130,200 Z" fill="#424242" />
+    <!-- 瓦纹纹理 -->
+    <pattern id="roof-tile" width="30" height="15" patternUnits="userSpaceOnUse" patternTransform="rotate(25)">
+      <rect x="0" y="0" width="30" height="7" fill="#424242" />
+      <rect x="0" y="7" width="30" height="8" fill="#212121" />
+    </pattern>
+    <path d="M130,180 L400,100 L670,180 L670,200 L130,200 Z" fill="url(#roof-tile)" />
+    <!-- 屋顶女儿墙（与屋顶衔接，无悬空） -->
+    <rect x="150" y="160" width="500" height="20" fill="#E64A19" />
+    <rect x="170" y="150" width="30" height="10" fill="#FF8F00" />
+    <rect x="270" y="150" width="30" height="10" fill="#FF8F00" />
+    <rect x="370" y="150" width="30" height="10" fill="#FF8F00" />
+    <rect x="470" y="150" width="30" height="10" fill="#FF8F00" />
+    <rect x="570" y="150" width="30" height="10" fill="#FF8F00" />
+    <!-- 屋脊装饰（贯穿屋顶，无断裂） -->
+    <line x1="400" y1="100" x2="400" y2="200" stroke="#616161" stroke-width="3" />
+  </g>
+</svg>

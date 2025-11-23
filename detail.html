@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>民居详情</title>
+  <!-- 同步首页CSS基础风格，确保视觉统一 -->
+  <style>
+    /* 基础样式同步首页 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f9f6f0;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d2b48c' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+      font-family: "Noto Serif SC", "SimSun", serif;
+      color: #5d4037;
+      padding: 20px;
+    }
+
+    /* 容器样式：同步首页最大宽度与居中逻辑 */
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* 标题样式：同步首页国风设计 */
+    #dwelling-name {
+      font-size: 2.5rem;
+      margin: 30px 0;
+      color: #8B4513;
+      text-shadow: 2px 2px 3px rgba(0,0,0,0.1);
+      position: relative;
+      display: inline-block;
+      padding: 0 20px;
+    }
+
+    #dwelling-name::before,
+    #dwelling-name::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 50px;
+      height: 1px;
+      background-color: #8B4513;
+    }
+
+    #dwelling-name::before {
+      left: 0;
+      transform: translateX(-120%) translateY(-50%);
+    }
+
+    #dwelling-name::after {
+      right: 0;
+      transform: translateX(120%) translateY(-50%);
+    }
+
+    /* 章节样式：替换默认边框，同步首页国风质感 */
+    .section {
+      margin: 40px 0;
+      padding: 30px;
+      border: 1px solid #d2b48c;
+      border-radius: 8px;
+      background-color: #fffbf0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 章节标题样式 */
+    .section h2 {
+      color: #8B4513;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #d2b48c;
+    }
+
+    .section h3 {
+      color: #6d4c41;
+      font-size: 1.4rem;
+      margin: 15px 0;
+    }
+
+    /* 按钮样式：同步首页交互风格 */
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #fff8e1;
+      border: 2px solid #d7ccc8;
+      border-radius: 8px;
+      color: #5d4037;
+      font-family: "Noto Serif SC", serif;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+
+    button:hover {
+      background-color: #f5f5dc;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+      border-color: #c0a080;
+    }
+
+    /* SVG容器样式：优化边框与背景 */
+    #structure-svg-container {
+      margin: 20px 0;
+      border: 1px solid #d2b48c;
+      padding: 20px;
+      height: 450px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* 结构详情面板：同步国风背景与边框 */
+    #structure-detail {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #fff8e1;
+      border-radius: 8px;
+      border: 1px solid #d7ccc8;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+
+    .detail-title {
+      color: #8B4513;
+      border-bottom: 1px dashed #d2b48c;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+    }
+
+    /* 图片样式：添加国风边框 */
+    #main-img, #scene-img {
+      max-width: 100%;
+      height: auto;
+      margin: 20px 0;
+      border: 1px solid #d2b48c;
+      border-radius: 4px;
+      padding: 10px;
+      background-color: #fff;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    /* 返回首页链接样式 */
+    a[href="index.html"] {
+      color: #8B4513;
+      text-decoration: none;
+      font-size: 1.1rem;
+      padding: 8px 15px;
+      margin-left: 80px;
+      border: 1px solid #d2b48c;
+      border-radius: 4px;
+      background-color: #fff8e1;
+      transition: all 0.3s ease;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    a[href="index.html"]:hover {
+      background-color: #f5f5dc;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      text-decoration: none;
+    }
+
+    /* 段落文本样式优化 */
+    .section p {
+      line-height: 1.8;
+      font-size: 1.1rem;
+      margin: 10px 0;
+    }
+
+    #detail-text strong {
+      color: #8B4513;
+    }
+
+    /* 响应式调整：同步首页断点逻辑 */
+    @media (max-width: 992px) {
+      #dwelling-name {
+        font-size: 2rem;
+      }
+      .section {
+        padding: 20px;
+      }
+      #structure-svg-container {
+        height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #dwelling-name {
+        font-size: 1.8rem;
+      }
+      .section h2 {
+        font-size: 1.5rem;
+      }
+      #structure-svg-container {
+        height: 350px;
+      }
+      button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="dwelling-name"></h1>
+    <a href="index.html">返回首页</a>
+
+    <div class="section">
+      <h2>1. 地域与自然环境</h2>
+      <p>分布：<span id="location"></span></p>
+      <p>气候：<span id="climate"></span></p>
+      <p>核心特征：<span id="core-feature"></span></p>
+      <img id="main-img" src="" alt="民居全景">
+    </div>
+
+    <div class="section">
+      <h2>2. 建筑形制拆解实验室</h2>
+      <p>点击按钮拆解结构，探索传统建筑智慧：</p>
+      <div id="control-buttons">
+        <button onclick="resetLayers()">重置</button>
+        <button onclick="splitLayer(4, '屋顶/顶层')">拆解顶层</button>
+        <button onclick="splitLayer(3, '主体结构')">拆解主体</button>
+        <button onclick="splitLayer(2, '核心空间')">拆解核心空间</button>
+      </div>
+      <div id="structure-svg-container">
+        <embed id="structure-svg" src="" type="image/svg+xml" width="100%" height="100%">
+      </div>
+      <div id="structure-detail">
+        <h3 class="detail-title">结构详情</h3>
+        <p id="detail-text">请点击上方拆解按钮查看对应结构的说明</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>3. 文化生活场景</h2>
+      <h3 id="scene-title"></h3>
+      <p id="scene-desc"></p>
+      <img id="scene-img" src="" alt="文化场景">
+    </div>
+  </div>
+
+  <script>
+    // 核心修改：更新为五种民居完整基础数据
+    const allDwellings = [
+      {
+        "id": "siheyuan",
+        "name": "北京四合院",
+        "location": "北京城区及周边",
+        "climate": "温带季风气候，冬冷夏热，春季多风沙",
+        "core_feature": "中轴对称、四合院落、青砖灰瓦、垂花门",
+        "main_img": "data/images/四合院全景.jpg",
+        "culture_scene": {
+          "title": "四合院节庆",
+          "desc": "春节时院门贴春联、挂灯笼，院内搭彩棚，全家人在正房祭祖拜年，体现尊卑有序的家族伦理",
+          "img": "data/images/四合院节庆.jpg"
+        }
+      },
+      {
+        "id": "huizhou",
+        "name": "徽派民居",
+        "location": "安徽宏村、西递",
+        "climate": "亚热带季风气候，多雨潮湿",
+        "core_feature": "马头墙、天井、砖雕、黛瓦粉壁",
+        "main_img": "data/images/徽派民居全景.jpg",
+        "culture_scene": {
+          "title": "堂屋祭祖",
+          "desc": "家族祭祀的核心场景，体现'忠孝传家'的理念",
+          "img": "data/images/徽派祭祖.jpg"
+        }
+      },
+      {
+        "id": "qilou",
+        "name": "岭南骑楼",
+        "location": "广东广州、汕头",
+        "climate": "亚热带季风气候，高温多雨，台风频繁",
+        "core_feature": "骑楼走廊、南洋风格、雕花铁窗、石板街道",
+        "main_img": "data/images/岭南骑楼全景.jpg",
+        "culture_scene": {
+          "title": "骑楼商街",
+          "desc": "骑楼下商铺林立，行人在走廊内避雨购物，形成独特的市井商业文化",
+          "img": "data/images/骑楼商街.jpg"
+        }
+      },
+      {
+        "id": "bamboo",
+        "name": "傣族竹楼",
+        "location": "云南西双版纳",
+        "climate": "热带季风气候，高温高湿，雨季漫长",
+        "core_feature": "干栏式结构、竹木结构、尖顶草棚、架空底层",
+        "main_img": "data/images/傣族竹楼全景.jpg",
+        "culture_scene": {
+          "title": "竹楼节庆",
+          "desc": "泼水节时竹楼内外洒清水祈福，楼上设宴待客，楼下拴挂彩饰，体现傣族热情好客的民俗",
+          "img": "data/images/竹楼泼水节.jpg"
+        }
+      },
+      {
+        "id": "cave_dwelling",
+        "name": "陕北窑洞",
+        "location": "陕西延安、榆林",
+        "climate": "大陆性气候，冬冷夏热，降水少",
+        "core_feature": "拱券结构、土坯墙、窗花、火炕",
+        "main_img": "data/images/陕北窑洞全景.jpg",
+        "culture_scene": {
+          "title": "窑洞内炕桌聚餐",
+          "desc": "全家人围坐火炕吃饭聊天，体现陕北人'抱团取暖'的生活智慧",
+          "img": "data/images/窑洞内炕桌聚餐.jpg"
+        }
+      }
+    ];
+
+    const structureData = {
+      "siheyuan": {
+        svgSrc: "data/images/siheyuan_structure.svg",
+        details: {
+          4: { // 屋顶层
+            名称: "灰瓦硬山顶",
+            功能: "硬山屋顶坡度平缓（约25°），适应北方少雨气候，同时可抵御春季风沙，屋顶女儿墙可阻挡风沙灌入院内",
+            材料: "采用北京本地烧制的小青瓦，屋顶覆盖草泥垫层，保温性强",
+            数据对比: "屋顶总厚度达30cm，冬季可减少室内热量散失40%以上"
+          },
+          3: { // 主体结构层
+            名称: "抬梁式木构架",
+            功能: "木构架承重，墙体仅起围护作用，抗震性能优异，可抵御北京地区常见的中强地震",
+            材料: "选用榆木、松木等硬木，榫卯连接无需铁钉，耐久性强",
+            数据对比: "传统榫卯结构的抗震能力优于现代砖混结构，可承受6级地震而不倒塌"
+          },
+          2: { // 院落层
+            名称: "四合院落布局",
+            功能: "四面房屋围合形成院落，冬季可阻挡寒风，夏季利用院落形成穿堂风，改善微气候",
+            材料: "院内铺设青石板，排水系统暗藏地下，避免积水",
+            数据对比: "院落封闭布局使冬季室内温度比室外高8-10℃，夏季低3-5℃"
+          }
+        }
+      },
+      "huizhou": {
+        svgSrc: "data/images/huizhou_structure.svg",
+        details: {
+          4: { 
+            名称: "双坡黛瓦屋顶",
+            功能: "双坡设计可快速排出皖南地区的雨水，避免屋顶积水渗漏",
+            材料: "采用当地烧制的青瓦，瓦片呈弧形相互咬合，防水性强",
+            数据对比: "传统坡屋顶的排水效率是平屋顶的3倍以上"
+          },
+          3: { 
+            名称: "封火山墙（马头墙）",
+            功能: "阻断火势蔓延，同时阻挡东南季风，保护室内温度稳定",
+            材料: "外层青砖砌筑，内部填充夯土，表面抹灰刷白",
+            数据对比: "火灾时可延缓火势扩散时间约15分钟"
+          },
+          2: { 
+            名称: "四水归堂天井",
+            功能: "收集雨水、采光通风，实现'四水归堂'的民俗寓意",
+            材料: "地面铺设青石板，四周设排水孔连接地下排水沟",
+            数据对比: "夏季可通过自然通风降低室内温度3-5℃"
+          }
+        }
+      },
+      "qilou": { 
+        svgSrc: "data/images/qilou_structure.svg",
+        details: {
+          4: { 
+            名称: "南洋式屋顶",
+            功能: "尖顶设计可快速排走暴雨，屋顶女儿墙可抵御台风侵袭",
+            材料: "红砖+混凝土混合结构，兼顾防晒与坚固性",
+            数据对比: "尖顶排水速度是平顶的2.5倍，可抵御10级以下台风"
+          },
+          3: { 
+            名称: "骑楼走廊",
+            功能: "二楼延伸形成走廊，遮挡风雨烈日，方便行人通行购物",
+            材料: "钢筋混凝土梁架，跨度可达3-4米",
+            数据对比: "走廊可使夏季地面温度降低5-8℃，雨天行人通行效率提升80%"
+          },
+          2: { 
+            名称: "防潮底层",
+            功能: "底层架空设计，防止地面返潮，适应岭南多雨潮湿气候",
+            材料: "花岗岩基座+青砖墙体，防潮性能优异",
+            数据对比: "架空底层使室内湿度比室外低20%-30%"
+          }
+        }
+      },
+      "bamboo": { 
+        svgSrc: "data/images/bamboo_structure.svg",
+        details: {
+          4: { 
+            名称: "尖顶草棚",
+            功能: "陡峭尖顶（坡度60°以上）可快速排走暴雨，避免积水腐蚀竹材",
+            材料: "本地毛竹+棕榈叶，轻便且取材容易",
+            数据对比: "尖顶排水速度是缓坡顶的4倍，适应年降水量2000mm以上的热带气候"
+          },
+          3: { 
+            名称: "竹木结构干栏",
+            功能: "房屋架空2-3米，避免地面潮湿、蛇虫侵扰，同时利用空气流通降温",
+            材料: "粗竹做立柱横梁，细竹编织墙面，轻便抗震",
+            数据对比: "架空设计使室内温度比地面低4-6℃，蛇虫侵扰概率降低90%"
+          },
+          2: { 
+            名称: "通透堂屋",
+            功能: "室内无隔断，前后开窗，形成强对流通风，快速驱散闷热",
+            材料: "竹编墙面+可开启竹窗，通风性极强",
+            数据对比: "自然通风量是封闭房屋的3倍，无需空调即可维持舒适温度"
+          }
+        }
+      },
+      "cave_dwelling": { 
+        svgSrc: "data/images/cave_structure.svg",
+        details: {
+          4: { 
+            名称: "拱券顶",
+            功能: "抗震坚固，分散黄土层压力",
+            材料: "原生黄土层+夯土加固",
+            数据对比: "拱高/跨度比1:2.5，优于现代混凝土拱的1:3"
+          },
+          3: { 
+            名称: "土坯墙",
+            功能: "隔热保温，调节室内温度",
+            材料: "黄土+麦秸夯筑",
+            数据对比: "墙体厚度80cm，室内外温差可达15℃"
+          },
+          2: { 
+            名称: "火炕",
+            功能: "取暖做饭一体化，提高能源利用率",
+            材料: "土坯+砖石砌筑",
+            数据对比: "热效率是现代暖气片的1.5倍"
+          }
+        }
+      }
+    };
+
+    // 初始化页面数据
+    const currentDwelling = JSON.parse(localStorage.getItem('currentDwelling'));
+    const dwelling = allDwellings.find(d => d.id === currentDwelling.id);
+
+    if (!dwelling) {
+      alert('未找到民居数据');
+      window.location.href = 'index.html';
+    }
+
+    // 填充基础信息
+    document.getElementById('dwelling-name').textContent = dwelling.name;
+    document.getElementById('location').textContent = dwelling.location;
+    document.getElementById('climate').textContent = dwelling.climate;
+    document.getElementById('core-feature').textContent = dwelling.core_feature;
+    document.getElementById('main-img').src = dwelling.main_img;
+    document.getElementById('scene-title').textContent = dwelling.culture_scene.title;
+    document.getElementById('scene-desc').textContent = dwelling.culture_scene.desc;
+    document.getElementById('scene-img').src = dwelling.culture_scene.img;
+
+    // 加载SVG（逻辑不变）
+    window.onload = function() {
+      const svgElement = document.getElementById('structure-svg');
+      svgElement.src = structureData[dwelling.id].svgSrc;
+    };
+
+    // 拆解图层函数（逻辑不变）
+    function splitLayer(layerNum, structureName) {
+      const svgDoc = document.getElementById('structure-svg').getSVGDocument();
+      if (!svgDoc) return;
+
+      const layer = svgDoc.getElementById(`layer-${layerNum}`);
+      if (!layer) return;
+
+      layer.style.transition = "transform 1s ease, opacity 1s ease";
+      layer.setAttribute('transform', `translate(0, -150)`);
+      layer.style.opacity = "0.5";
+
+      const detail = structureData[dwelling.id].details[layerNum];
+      if (detail) {
+        document.querySelector('.detail-title').textContent = `结构详情：${detail.名称}`;
+        document.getElementById('detail-text').innerHTML = `
+          <p><strong>功能：</strong>${detail.功能}</p>
+          <p><strong>材料工艺：</strong>${detail.材料}</p>
+          <p><strong>数据对比：</strong>${detail.数据对比}</p>
+        `;
+      }
+    }
+
+    // 重置图层函数（逻辑不变）
+    function resetLayers() {
+      const svgDoc = document.getElementById('structure-svg').getSVGDocument();
+      if (!svgDoc) return;
+
+      for (let i = 1; i <= 4; i++) {
+        const layer = svgDoc.getElementById(`layer-${i}`);
+        if (layer) {
+          layer.style.transition = "transform 1s ease, opacity 1s ease";
+          layer.setAttribute('transform', `translate(0, 0)`);
+          layer.style.opacity = "1";
+        }
+      }
+
+      document.querySelector('.detail-title').textContent = "结构详情";
+      document.getElementById('detail-text').textContent = "请点击上方拆解按钮查看对应结构的说明";
+    }
+  </script>
+</body>
+</html>

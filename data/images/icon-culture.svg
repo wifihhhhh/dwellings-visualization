@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#fffaf0"/>
+  <!-- 回字纹 -->
+  <g stroke="#8b4513" stroke-width="3" fill="none">
+    <rect x="60" y="60" width="80" height="80"/>
+    <rect x="80" y="80" width="40" height="40"/>
+  </g>
+  <!-- 小印章 -->
+  <rect x="140" y="130" width="30" height="35" fill="#bf360c"/>
+  <text x="155" y="150" font-size="22" fill="#fffaf0" text-anchor="middle">文</text>
+</svg>

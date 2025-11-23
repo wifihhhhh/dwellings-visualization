@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#fffaf0"/>
+  <!-- 远山 -->
+  <path d="M0 140 Q50 100 100 140 T200 140 L200 200 L0 200 Z" fill="#a1887f" opacity=".6"/>
+  <!-- 近山 -->
+  <path d="M40 160 Q80 120 120 160 L40 160 Z" fill="#8b4513"/>
+  <!-- 屋檐 -->
+  <path d="M60 160 L100 140 L140 160 Z" fill="#5d4037"/>
+  <!-- 太阳 -->
+  <circle cx="160" cy="50" r="18" fill="none" stroke="#d7ccc8" stroke-width="3"/>
+</svg>

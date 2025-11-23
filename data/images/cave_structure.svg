@@ -1,0 +1,72 @@
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg" id="cave-svg">
+  <style>
+    .structure-layer { transition: all 1s ease; }
+    .text-style { font-family: "SimSun", serif; font-size: 14px; fill: #333; }
+  </style>
+
+  <!-- 1. 地面层（最下层：窑洞前空地+地面） -->
+  <g id="layer-1" class="structure-layer" transform="translate(0, 0)">
+    <!-- 黄土空地（窑洞前活动区域） -->
+    <rect x="100" y="300" width="600" height="150" fill="#CD853F" />
+    <!-- 地面纹理（黄土颗粒感） -->
+    <pattern id="earth-pattern" width="40" height="20" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="40" height="20" fill="#CD853F" />
+      <path d="M0,10 Q5,0 10,10 T20,10 T30,10 T40,10" stroke="#8B4513" stroke-width="0.5" fill="none" />
+    </pattern>
+    <rect x="100" y="300" width="600" height="150" fill="url(#earth-pattern)" />
+    <!-- 门前小路 -->
+    <rect x="350" y="400" width="100" height="50" fill="#D2B48C" />
+  </g>
+
+  <!-- 2. 窑洞基座层（第二层：窑洞洞口+夯土基座） -->
+  <g id="layer-2" class="structure-layer" transform="translate(0, 0)">
+    <!-- 山体夯土基座（窑洞依托的黄土崖） -->
+    <rect x="100" y="100" width="600" height="200" fill="#8B4513" />
+    <!-- 三个并排窑洞洞口（陕北常见三孔窑洞布局） -->
+    <rect x="200" y="200" width="80" height="100" fill="transparent" stroke="#5D4037" stroke-width="3" />
+    <rect x="350" y="200" width="80" height="100" fill="transparent" stroke="#5D4037" stroke-width="3" />
+    <rect x="500" y="200" width="80" height="100" fill="transparent" stroke="#5D4037" stroke-width="3" />
+    <!-- 洞口门槛 -->
+    <rect x="220" y="300" width="40" height="10" fill="#5D4037" />
+    <rect x="370" y="300" width="40" height="10" fill="#5D4037" />
+    <rect x="520" y="300" width="40" height="10" fill="#5D4037" />
+  </g>
+
+  <!-- 3. 窑洞主体层（第三层：窑洞内部空间+火炕） -->
+  <g id="layer-3" class="structure-layer" transform="translate(0, 0)">
+    <!-- 窑洞内部空间（半圆形拱券截面） -->
+    <path d="M200,200 Q240,150 280,200 L280,300 L200,300 Z" fill="#D2B48C" stroke="#8B4513" stroke-width="2" />
+    <path d="M350,200 Q390,150 430,200 L430,300 L350,300 Z" fill="#D2B48C" stroke="#8B4513" stroke-width="2" />
+    <path d="M500,200 Q540,150 580,200 L580,300 L500,300 Z" fill="#D2B48C" stroke="#8B4513" stroke-width="2" />
+    <!-- 左侧窑洞火炕（陕北窑洞核心设施） -->
+    <rect x="210" y="250" width="60" height="50" fill="#8B4513" opacity="0.7" />
+    <!-- 中间窑洞灶台（与火炕相连） -->
+    <circle cx="390" y="270" r="15" fill="#5D4037" />
+    <!-- 右侧窑洞储物台 -->
+    <rect x="510" y="250" width="60" height="20" fill="#8B4513" opacity="0.7" />
+  </g>
+
+  <!-- 4. 屋顶/山体层（最上层：黄土崖顶+植被） -->
+  <g id="layer-4" class="structure-layer" transform="translate(0, 0)">
+    <!-- 黄土崖顶（窑洞顶部山体） -->
+    <rect x="100" y="100" width="600" height="50" fill="#A0522D" />
+    <!-- 崖顶纹理（黄土层理） -->
+    <pattern id="cliff-pattern" width="40" height="20" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="40" height="20" fill="#A0522D" />
+      <line x1="0" y1="5" x2="40" y2="5" stroke="#8B4513" stroke-width="1" opacity="0.5" />
+      <line x1="0" y1="10" x2="40" y2="10" stroke="#8B4513" stroke-width="1" opacity="0.5" />
+      <line x1="0" y1="15" x2="40" y2="15" stroke="#8B4513" stroke-width="1" opacity="0.5" />
+    </pattern>
+    <rect x="100" y="100" width="600" height="50" fill="url(#cliff-pattern)" />
+    <!-- 崖顶植被（低矮灌木） -->
+    <path d="M150,100 Q160,85 170,100" fill="#2E7D32" />
+    <path d="M250,100 Q260,85 270,100" fill="#2E7D32" />
+    <path d="M350,100 Q360,85 370,100" fill="#2E7D32" />
+    <path d="M450,100 Q460,85 470,100" fill="#2E7D32" />
+    <path d="M550,100 Q560,85 570,100" fill="#2E7D32" />
+    <!-- 窑洞拱券顶加固层 -->
+    <path d="M200,200 Q240,150 280,200" stroke="#5D4037" stroke-width="3" fill="none" />
+    <path d="M350,200 Q390,150 430,200" stroke="#5D4037" stroke-width="3" fill="none" />
+    <path d="M500,200 Q540,150 580,200" stroke="#5D4037" stroke-width="3" fill="none" />
+  </g>
+</svg>
